@@ -1,0 +1,185 @@
+<html>
+<!--
+This map created by KG6WXC for AREDN
+A few bits of code have been lifted from KK6FUT (Thanks!)
+
+Some new things vs the original AREDN map
+*uses new icons for the markers
+*some different map selections
+*full screen toggle (removed early jan 2017)
+*marker "layers" are selectable by band
+*hovering over the marker shows the name of the node
+
+(early jan 2017)
+*marker icons increased in size slightly
+*popup font size increased slightly
+*zoom levels fixed
+*marker icons changed to use absolute URL's (thanks W6BI!)
+*added the "aredn*Dir" variables to make it easier to move this page and it's components if the time comes.
+(the only other place the URL's will need to be changed is at the bottom of this page, in the "groupedOverlays")
+*now using aredn's own map access token
+
+(early feb 2017)
+*changed to use OSM default map, terrain tiles by "Stamen Design", topographic renderings by "OpenTopoMap" (they are all free!)
+(still need to find some satellite maps)
+-->
+<head>
+	<title>AREDN Mesh Network Map</title>
+	<meta charset="utf-8">
+
+	<link rel="stylesheet" href="//unpkg.com/leaflet@1.0.1/dist/leaflet.css">
+	<script src="//unpkg.com/leaflet@1.0.1/dist/leaflet.js"></script>
+	<script src="//ismyrnow.github.io/leaflet-groupedlayercontrol/src/leaflet.groupedlayercontrol.js"></script>
+	<link href="//ismyrnow.github.io/leaflet-groupedlayercontrol/src/leaflet.groupedlayercontrol.css" rel="stylesheet">
+	<script src='//api.tiles.mapbox.com/mapbox.js/plugins/leaflet-omnivore/v0.3.1/leaflet-omnivore.min.js'></script>
+	
+</head>
+<body bgcolor="lightgrey" style="margin: 0px">
+
+	<div id="mapdiv" style="width: 100%; height: 100%;">
+		<script>
+			var arednUserContentDir = "http://usercontent.aredn.org/K/5/K5DLQ/";
+			var arednDataDir = "http://data.aredn.org/";
+			//KK6FUT
+			function $_GET(param) {
+				var vars = {};
+				window.location.href.replace( location.hash, '' ).replace( 
+					/[?&]+([^=&]+)=?([^&]*)?/gi, // regexp
+					function( m, key, value ) { // callback
+						vars[key] = value !== undefined ? value : '';
+					}
+				);
+				if ( param ) {
+					return vars[param] ? vars[param] : null;	
+				}
+				return vars;
+			}
+		
+			var $_GET = $_GET(),
+			initLng = $_GET['lon'],
+			initLat = $_GET['lat'],
+			initZoom = $_GET['z'];
+			if (!initZoom) { initZoom = 3 };
+			if (!initLat) { initLat=39.8282 };
+			if (!initLng) { initLng=-98.5795 };
+			//end KK6FUT
+			
+			myDefaultAttribution			=	' Map data &copy\; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' + '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>' + '<br><b>The Amateur Radio Emergency Data Network</b> - <a href="http://www.aredn.org">www.aredn.org</a>';
+			myTerrainAttribution			=	' Map data &copy\; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' + '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>' + '<br><a href="http://maps.stamen.com">Map tiles</a> by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>' + '<br><b>Amateur Radio Emergency Data Network</b> - <a href="http://www.aredn.org">www.aredn.org</a>';
+			myTopoAttribution			=	' Map data &copy\; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' + '<a href="http://viewfinderpanoramas.org">SRTM</a><br>Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)' + '<br><b>Amateur Radio Emergency Data Network</b> - <a href="http://www.aredn.org">www.aredn.org</a>';
+			
+			var defaultMapURL_OSM		=	'//{s}.tile.osm.org/{z}/{x}/{y}.png';
+			var terrainMapURL			=	'//stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}.jpg';
+			var topoMapURL				=	'//{s}.tile.opentopomap.org/{z}/{x}/{y}.png'
+			
+			var OSMmap					=	L.tileLayer(defaultMapURL_OSM, {attribution: myDefaultAttribution});
+			var terrainMap				=	L.tileLayer(terrainMapURL, {attribution: myTerrainAttribution});
+			var topoMap					=	L.tileLayer(topoMapURL, {attribution: myTopoAttribution, maxZoom: 17});
+			
+			//from KK6FUT (thanks for the clue!)
+			//even used the same variable names that I was!! :)
+			//2GHz
+			var twoLayer = L.geoJson(null, {
+								pointToLayer: function(feature, latlng){
+														var twoRadioCircle	=	new L.Icon({iconUrl: arednUserContentDir + 'purpleRadioCircle-icon.png', iconSize: [30, 30], iconAnchor: [15, 15], popupAnchor: [0, -15]});
+														return L.marker(latlng, {title: feature.properties.name, icon: twoRadioCircle});
+													}
+											});
+			//3GHz
+			var threeLayer = L.geoJson(null, {
+								pointToLayer: function(feature, latlng){
+														var threeRadioCircle	=	new L.Icon({iconUrl: arednUserContentDir + 'blueRadioCircle-icon.png', iconSize: [30, 30], iconAnchor: [15, 15], popupAnchor: [0, -15]});
+														return L.marker(latlng, {title: feature.properties.name, icon: threeRadioCircle});
+													}
+											});
+			//5GHz
+			var fiveLayer = L.geoJson(null, {
+								pointToLayer: function(feature, latlng){
+														var fiveRadioCircle	=	new L.Icon({iconUrl: arednUserContentDir + 'goldRadioCircle-icon.png', iconSize: [30, 30], iconAnchor: [15, 15], popupAnchor: [0, -15]});
+														return L.marker(latlng, {title: feature.properties.name, icon: fiveRadioCircle});
+													}
+											});
+			//900MHz
+			var nineLayer = L.geoJson(null, {
+								pointToLayer: function(feature, latlng){
+														var nineRadioCircle	=	new L.Icon({iconUrl: arednUserContentDir + 'magentaRadioCircle-icon.png', iconSize: [30, 30], iconAnchor: [15, 15], popupAnchor: [0, -15]});
+														return L.marker(latlng, {title: feature.properties.name, icon: nineRadioCircle});
+													}
+											});
+		
+			//overlay groups to help superposition order (doesn't really seem to do much)
+			var nineHundredMHzStations		=	new L.LayerGroup();
+			var twoGHzStations				=	new L.LayerGroup();
+			var threeGHzStations			=	new L.LayerGroup();
+			var fiveGHzStations				=	new L.LayerGroup();
+		
+			twoGHzStations = omnivore.kml(arednDataDir +'map2.kml', null, twoLayer).on('ready', function(){
+																//also from KK6FUT (thx again!)
+																	twoGHzStations.eachLayer(function(layer) {
+																		layer.bindPopup("<font style='font-size: 15px;'><b>" + layer.feature.properties.name + "</b><br>" +  layer.feature.properties.description + "</font>");
+																		});
+																	});
+			threeGHzStations = omnivore.kml(arednDataDir + 'map3.kml', null, threeLayer).on('ready', function(){
+																	//also from KK6FUT (thx again!)
+																	threeGHzStations.eachLayer(function(layer) {
+																		layer.bindPopup("<font style='font-size: 15px;'><b>" + layer.feature.properties.name + "</b><br>" +  layer.feature.properties.description + "</font>");
+																		});
+																	});
+			fiveGHzStations = omnivore.kml(arednDataDir + 'map5.kml', null, fiveLayer).on('ready', function(){
+																	//also from KK6FUT (thx again!)
+																	fiveGHzStations.eachLayer(function(layer) {
+																		layer.bindPopup("<font style='font-size: 15px;'><b>" + layer.feature.properties.name + "</b><br>" +  layer.feature.properties.description + "</font>");
+																		});
+																	});
+			nineHundredMHzStations = omnivore.kml(arednDataDir + 'map9.kml', null, nineLayer).on('ready', function(){
+																//also from KK6FUT (thx again!)
+																nineHundredMHzStations.eachLayer(function(layer) {
+																	layer.bindPopup("<font style='font-size: 15px;'><b>" + layer.feature.properties.name + "</b><br>" +  layer.feature.properties.description + "</font>");
+																	});
+																});
+
+		//legend overlay
+			var legend = L.control({position: 'topright'});
+			legend.onAdd = function(map) {
+				var div = L.DomUtil.create('div', 'info legend', L.DomUtil.get('map'));
+				div.innerHTML +=
+				"<img src='" + arednUserContentDir + "mapLegend.png' alt='legend' width='110' height='164'>";
+				return div;
+			};
+
+			//init the map with size, zoom level, center co-ords, etc...
+			// 39.591748, -98.123306 = about the middle of the U.S.
+			// 38.356954, 10.948774 = about the center of the world, on a flat map (minus the artic(s))
+			var map = L.map('mapdiv', {
+				//center:	[34.35, -119.6], //california coast
+				//center:	[39.59, -98.12], //mid USA abouts
+				//center:	[38.36, 10.95], //mid world on the flat map
+				center: [initLat, initLng],
+				//zoom:	2, //was 4 on mid USA map co-ords
+				zoom: initZoom,
+				maxZoom: 18,
+				minZoom: 2,
+				layers: [OSMmap, nineHundredMHzStations, twoGHzStations, threeGHzStations, fiveGHzStations]
+			});
+
+			var baseLayers	=	{
+				"Default":		OSMmap,
+				"Terrain":		terrainMap,
+				"Topographic":	topoMap,
+			};
+			
+			//these just don't seem to want to use the aredn* directory URL variables (no idea why yet)
+			var groupedOverlays	=	{
+				"Stations": {
+				"<img src='http://usercontent.aredn.org/K/5/K5DLQ/magentaRadioCircle-icon.png' height='18'>900MHz": nineHundredMHzStations,
+				"<img src='http://usercontent.aredn.org/K/5/K5DLQ/purpleRadioCircle-icon.png' height='18'>2.4GHz": twoGHzStations,
+				"<img src='http://usercontent.aredn.org/K/5/K5DLQ/blueRadioCircle-icon.png' height='18'>3.4GHz": threeGHzStations,
+				"<img src='http://usercontent.aredn.org/K/5/K5DLQ/goldRadioCircle-icon.png' height='18'>5.8GHz": fiveGHzStations },
+			};
+			
+			L.control.groupedLayers(baseLayers, groupedOverlays, {position: 'topleft'}).addTo(map);
+			legend.addTo(map);
+		</script>
+	</div>
+</body>
+</html>
