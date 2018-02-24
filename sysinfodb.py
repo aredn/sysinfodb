@@ -176,25 +176,10 @@ def get_map5kml():
 def get_maplinkskml():
     return static_file_cors('mongo_kmllinks.kml',root='.')
 
-# change certain keys with '.N' to '(N)' --- NOT NEEDED ANYMORE
-def scrub_encode_keys(j):
-    # scrub interface keys
-    for i in j['interfaces']:
-        if i['name']=='eth0.1':
-            i['name']= 'eth0(1)'
-        if i['name']=='eth0.2':
-            i['name']= 'eth0(2)'
-    return j
-
-# change certain keys with '(N)' back to '.N' --- NOT NEEDED ANYMORE
-def scrub_decode_keys(j):
-    # scrub interface keys
-    for i in j['interfaces']:
-        if i['name']=='eth0(1)':
-            i['name']= 'eth0.1'
-        if i['name']=='eth0(2)':
-            i['name']= 'eth0.2'
-    return j
+# return the livemap.html
+@route('/livemap.html', method='GET')
+def get_livemaphtml():
+    return static_file_cors('livemap.html',root='.')
 
 def find_index(dicts, key, value):
     class Null: pass
