@@ -78,6 +78,8 @@ def board_model(x):
     'TP-Link CPE510 v2.0' : 'TP-Link CPE510 v2.0',
     'TP-Link CPE210 v3.0' : 'TP-Link CPE210 v3.0',
     'TP-Link CPE510 v3.0' : 'TP-Link CPE510 v3.0',
+    'Mikrotik RouterBOARD 912UAG-5HPnD' : 'Mikrotik RouterBOARD 912UAG-5HPnD',
+    'Mikrotik RouterBOARD 912UAG-2HPnD' : 'Mikrotik RouterBOARD 912UAG-2HPnD',
     '0xe005' : 'NanoStation M5',
     '0xe009' : 'NanoStation Loco M9',
     '0xe012' : 'NanoStation M2',
@@ -282,6 +284,10 @@ def getBand(bid):
     band=5
   elif bid=='TP-Link CPE510 v3.0':
     band=5
+  elif bid=='Mikrotik RouterBOARD 912UAG-5HPnD':
+    band=5
+  elif bid=='Mikrotik RouterBOARD 912UAG-2HPnD':
+    band=2
   elif bid=='unknown':
     band=2
   else:
