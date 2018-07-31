@@ -74,6 +74,10 @@ def board_model(x):
     '0xe012': 'NanoStation M2', # nsm2
     'TP-Link CPE210 v1.0' : 'TP-Link CPE210 v1.0',
     'TP-Link CPE510 v1.0' : 'TP-Link CPE510 v1.0',
+    'TP-Link CPE210 v2.0' : 'TP-Link CPE210 v2.0',
+    'TP-Link CPE510 v2.0' : 'TP-Link CPE510 v2.0',
+    'TP-Link CPE210 v3.0' : 'TP-Link CPE210 v3.0',
+    'TP-Link CPE510 v3.0' : 'TP-Link CPE510 v3.0',
     '0xe005' : 'NanoStation M5',
     '0xe009' : 'NanoStation Loco M9',
     '0xe012' : 'NanoStation M2',
@@ -268,7 +272,15 @@ def getBand(bid):
     band=5
   elif bid=='TP-Link CPE210 v1.0':
     band=2
+  elif bid=='TP-Link CPE210 v2.0':
+    band=2
+  elif bid=='TP-Link CPE210 v3.0':
+    band=2
   elif bid=='TP-Link CPE510 v1.0':
+    band=5
+  elif bid=='TP-Link CPE510 v2.0':
+    band=5
+  elif bid=='TP-Link CPE510 v3.0':
     band=5
   elif bid=='unknown':
     band=2

@@ -40,7 +40,9 @@ RUN mkdir -p ${AREDNDIR} \
 USER ${AREDNUSER}
 WORKDIR ${AREDNDIR}
 
-COPY livemap.html ${AREDNDIR}
+# COPY livemap.html ${AREDNDIR}
 COPY mongo_kml.py ${AREDNDIR}
 COPY sysinfodb.py ${AREDNDIR}
-CMD ${AREDNDIR}/sysinfodb.py
+COPY start.sh ${AREDNDIR}
+# CMD ${AREDNDIR}/sysinfodb.py
+CMD ${AREDNDIR}/start.sh
