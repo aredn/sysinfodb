@@ -87,6 +87,7 @@ def board_model(x):
     '0xe0a2' : 'NanoStation Loco M2',
     '0xe0a5' : 'NanoStation Loco M5',
     '0xe105' : 'Rocket M5',
+    '0xe1a5' : 'PowerBridge M5',
     '0xe1b2' : 'Rocket M2',
     '0xe1b5' : 'Rocket M5',
     '0xe1b9' : 'Rocket M9',
